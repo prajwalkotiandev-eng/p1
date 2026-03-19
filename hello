@@ -31,7 +31,7 @@ area <- c(1100, 1200, 1500, 1800, 2100, 2300, 2500, 2800, 3000, 3200)
 price <- c(250, 280, 340, 400, 450, 480, 520, 590, 630, 670)
 house_data <- data.frame(area, price)
 
- #2. Build the Linear Model (lm)
+#2. Build the Linear Model (lm)
 # This finds the best-fit line where Price depends on Area
 house_model <- lm(price ~ area, data = house_data)
 
