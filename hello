@@ -24,22 +24,103 @@ testPred <- predict(iris_ctree, newdata = testData)
 table(testPred, testData$Species)
 
 
-P44 :-Linear Regerssion
+P22 :-Perform text preprocessing and generate word cloud using tm package in r:
+
+# install.packages(c("tm", "wordcloud", "RColorBrewer"))
+library(tm)
+library(wordcloud)
+library(RColorBrewer)
+
+# Sample textual data (e.g., related to your MedRed project or Data Science)
+text_data <- c(
+  "Data Science is an interdisciplinary field that uses scientific methods.",
+  "Machine Learning is a subset of artificial intelligence and deep         learning.",
+  "R programming is widely used for statistical analysis and text mining.",
+  "Data cleaning and text preprocessing are essential steps in AI.",
+  "Word clouds provide a visual representation of text data frequencies.",
+  "Flutter and Node.js are used for mobile and backend development."
+)
+
+# Create a Corpus
+docs <- Corpus(VectorSource(text_data))
+
+#1. Convert to Lowercase (Standardization)
+docs <- tm_map(docs, content_transformer(tolower))
+
+#2. Remove Numbers
+docs <- tm_map(docs, removeNumbers)
+
+#3. Remove Punctuation
+docs <- tm_map(docs, removePunctuation)
+
+#4. Remove Stop Words (Common words like 'the', 'is', 'at')
+docs <- tm_map(docs, removeWords, stopwords("english"))
+
+#5. Eliminate Extra White Spaces
+docs <- tm_map(docs, stripWhitespace)
+
+#6. To build the cloud, we must count word occurrences using a Term-Document Matrix.
+dtm <- TermDocumentMatrix(docs)
+matrix <- as.matrix(dtm)
+words <- sort(rowSums(matrix), decreasing = TRUE)
+df <- data.frame(word = names(words), freq = words)
+
+# 7. Generate Word Cloud
+set.seed(1234) # For a consistent layout
+wordcloud(words = df$word, freq = df$freq, min.freq = 1,
+          max.words = 100, random.order = FALSE, rot.per = 0.35, 
+          colors = brewer.pal(8, "Dark2"))
+
+
+P33 :- Compute mean, median, standard deviation and generate histograms/boxplots using R:
+
+#1. Create a sample numeric dataset
+scores <- c(55, 62, 65, 70, 72, 75, 78, 80, 82, 85, 88, 90, 92, 95, 45, 50, 68, 74, 81, 89)
+
+#2. Display the data
+print(scores)
+
+#3. Calculate Mean (Average)
+mean_val <- mean(scores)
+
+#4. Calculate Median (Middle value)
+median_val <- median(scores)
+
+#5. Calculate Standard Deviation (Measure of dispersion)
+sd_val <- sd(scores)
+
+#6. Display the results
+cat("Mean Score:", mean_val, "\n")
+cat("Median Score:", median_val, "\n")
+cat("Standard Deviation:", round(sd_val, 2), "\n")
+
+# --- Plot 1: Histogram ---
+hist(scores, main = "Frequency of Scores", xlab = "Marks", col = "skyblue", border = "white", breaks = 5)
+
+# --- Plot 2: Boxplot --- 
+# This shows the Median, Quartiles, and potential Outliers
+boxplot(scores, main = "Distribution of Scores", ylab = "Marks", col = "tomato", border = "brown")
+
+# Reset layout to default (optional) 
+par(mfrow = c(1, 1))
+
+
+P44 :-Linear Regerssion:
 
 #1. Create the Dataset
 area <- c(1100, 1200, 1500, 1800, 2100, 2300, 2500, 2800, 3000, 3200)
 price <- c(250, 280, 340, 400, 450, 480, 520, 590, 630, 670)
 house_data <- data.frame(area, price)
 
-#2. Build the Linear Model (lm)
+ #2. Build the Linear Model (lm)
 # This finds the best-fit line where Price depends on Area
 house_model <- lm(price ~ area, data = house_data)
 
-# 3. View the Statistical Results
+#3. View the Statistical Results
 # This shows the Intercept, Slope, and R-squared (Accuracy)
 summary(house_model)
 
-# 4. Create a Professional Plot
+#4. Create a Professional Plot
 plot(house_data$area, house_data$price, 
      main = "House Price vs Area",
      xlab = "Square Footage (sq ft)", 
@@ -51,26 +132,98 @@ abline(house_model, col = "red", lwd = 2)
 
 #6. Add a Grid for better readability
 grid()
-P55 :-association rule
+
+
+P55 :-association rule:
 
 install.packages("arules", type = "binary")
 library(arules)
 
-#1. Load Data 
+#1.Load Data 
 data("Titanic")
 titanic_df <- as.data.frame(Titanic)
 
-#2. Expand Data 
+#2.Expand Data 
 # This converts the summary table into 2,201 individual rows
 titanic_raw <- titanic_df[rep(1:nrow(titanic_df), titanic_df$Freq), 1:4]
 
-#3. Run Apriori Algorithm
+#3.Run Apriori Algorithm
 # We look for rules that lead to 'Survived=Yes'
 rules <- apriori(titanic_raw, 
                  parameter = list(supp = 0.005, conf = 0.8),
                  appearance = list(default="lhs", rhs="Survived=Yes"))
 
-# 4. Sort and View
+#4.Sort and View
 rules_sorted <- sort(rules, by = "lift", decreasing = TRUE)
 inspect(rules_sorted[1:5])
-\
+
+
+P66 :--Show the implementation of clustering algorithm:
+
+#1.Load the dataset
+data(iris)
+
+#2.Select only the numeric columns for 2D clustering
+df <- iris[, 1:2]
+
+#3.Standardize the data (Scaling) for better performance
+df_scaled <- scale(df)
+
+#4.Calculate Total Within-Cluster Sum of Squares (WSS)
+wss <- (nrow(df_scaled)-1)*sum(apply(df_scaled,2,var))
+for (i in 2:10) wss[i] <- sum(kmeans(df_scaled, centers=i)$withinss)
+
+#5.Plot the Elbow Method
+plot(1:10, wss, type="b", pch=19, col="darkred",
+     xlab="Number of Clusters (K)",
+     ylab="Total Within-clusters Sum of Squares",
+     main="The Elbow Method to find Optimal K")
+
+#6.Set seed for reproducibility
+set.seed(123)
+
+#7.Run K-Means with 3 clusters
+km_result <- kmeans(df_scaled, centers = 3, nstart = 25)
+
+#8.View the cluster assignments and sizes
+print(km_result$size)
+print(km_result$centers)
+
+
+P77 :-Show the implementation of time series analysis.
+
+#1.Load and Inspect the Data 
+data("AirPassengers")
+class(AirPassengers) # Confirming it is a 'ts' (Time Series) object
+
+#View the start, end, and frequency (12 = Monthly)
+start(AirPassengers)
+end(AirPassengers)
+frequency(AirPassengers)
+
+#2.Basic Visualization
+#Plotting the raw data to see the trend and seasonality
+plot(AirPassengers, 
+     main = "Monthly Airline Passenger Numbers (1949-1960)",
+     ylab = "Total Passengers (in thousands)", 
+     xlab = "Year",
+     col = "blue", lwd = 2)
+
+#3.Time Series Decomposition (The "Proper" Step) 
+#Decomposing breaks the data into: Trend, Seasonal, and Random components
+# We use 'multiplicative' because the seasonal variation increases with time
+decomposed_data <- decompose(AirPassengers, type = "multiplicative")
+#Plot the decomposed components
+plot(decomposed_data, col = "darkgreen")
+
+#4.Seasonal Analysis (Boxplot)
+# This shows exactly which months have the highest travel (Seasonality)
+boxplot(AirPassengers ~ cycle(AirPassengers), 
+        main = "Seasonal Variation in Air Passengers",
+        xlab = "Month (1 = Jan, 12 = Dec)", 
+        ylab = "Passengers",
+        col = "orange")
+
+#5.Check for Stationarity (Bonus Marks)
+# Log transformation is often used to stabilize the variance
+plot(log(AirPassengers), main = "Log-Transformed Time Series", col = "red")
