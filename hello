@@ -1,25 +1,53 @@
 P11 :-Decision Tree:
 
-1. Data Splitting
+#1. Data Splitting
 str(iris)
 set.seed(1234)
 ind <- sample(2, nrow(iris), replace = TRUE, prob = c(0.7, 0.3))
 trainData <- iris[ind == 1, ]
 testData <- iris[ind == 2, ]
 
-2. Model Setup & Training
+#2. Model Setup & Training
 library(party)
 myFormula <- Species ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width
 iris_ctree <- ctree(myFormula, data = trainData)
 
-3. Evaluation (Training Set)
+#3. Evaluation (Training Set)
 table(predict(iris_ctree), trainData$Species)
 
-4. Visualization
+#4. Visualization
 plot(iris_ctree)
 plot(iris_ctree, type = "simple")
 
-5. Prediction & Evaluation (Test Set)
+#5. Prediction & Evaluation (Test Set)
 testPred <- predict(iris_ctree, newdata = testData)
 table(testPred, testData$Species)
 
+
+P44 :-Linear Regerssion
+
+#1. Create the Dataset
+area <- c(1100, 1200, 1500, 1800, 2100, 2300, 2500, 2800, 3000, 3200)
+price <- c(250, 280, 340, 400, 450, 480, 520, 590, 630, 670)
+house_data <- data.frame(area, price)
+
+ #2. Build the Linear Model (lm)
+# This finds the best-fit line where Price depends on Area
+house_model <- lm(price ~ area, data = house_data)
+
+# 3. View the Statistical Results
+# This shows the Intercept, Slope, and R-squared (Accuracy)
+summary(house_model)
+
+# 4. Create a Professional Plot
+plot(house_data$area, house_data$price, 
+     main = "House Price vs Area",
+     xlab = "Square Footage (sq ft)", 
+     ylab = "Price (in $1000s)",
+     pch = 19, col = "darkblue")
+
+#5. Draw the "Proper" Regression Line
+abline(house_model, col = "red", lwd = 2)
+
+#6. Add a Grid for better readability
+grid()
